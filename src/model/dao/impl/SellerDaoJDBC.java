@@ -100,8 +100,48 @@ public class SellerDaoJDBC implements SellerDao{
 
 	@Override
 	public List<Seller> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		try {
+			st = conn.prepareStatement(
+					"SELECT seller.*,department.Name as DepName\r\n"
+					+ "FROM seller INNER JOIN department\r\n"
+					+ "ON seller.DepartmentId = department.Id\r\n"
+					+ "ORDER BY Id"					
+					);			
+			
+			rs = st.executeQuery();
+			
+			List<Seller> list = new ArrayList<>();
+			
+			//Guardar dentro do map qualquer departamento que for instanciado
+			Map<Integer, Department> map = new HashMap<>();
+			
+			while (rs.next()) {
+				//Testar se o departamento existe, pra não ter que ficar instanciando toda vez que departamento existir				
+				Department dep = map.get(rs.getInt("DepartmentId"));
+				
+				if (dep == null) {
+					dep = instantiateDepartment(rs);
+					//Guardar a informação dentro do map
+					map.put(rs.getInt("DepartmentId"), dep);
+				}				
+				
+				Seller obj = instantiateSeller(rs, dep);
+				list.add(obj);
+			}
+			return list;
+		}
+		catch (SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+		
+		
 	}
 
 	@Override
@@ -123,14 +163,17 @@ public class SellerDaoJDBC implements SellerDao{
 			rs = st.executeQuery();
 			
 			List<Seller> list = new ArrayList<>();
+			
+			//Guardar dentro do map qualquer departamento que for instanciado
 			Map<Integer, Department> map = new HashMap<>();
 			
 			while (rs.next()) {
-				
+				//Testar se o departamento existe, pra não ter que ficar instanciando toda vez que departamento existir				
 				Department dep = map.get(rs.getInt("DepartmentId"));
 				
 				if (dep == null) {
 					dep = instantiateDepartment(rs);
+					//Guardar a informação dentro do map
 					map.put(rs.getInt("DepartmentId"), dep);
 				}				
 				
