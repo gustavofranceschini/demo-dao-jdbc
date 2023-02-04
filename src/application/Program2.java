@@ -34,7 +34,24 @@ public class Program2 {
 		Department newDepartment = new Department(null, "Tecnology");
 		departmentDao.insert(newDepartment);
 		System.out.println("Completed insert!!");
-		System.out.println(newDepartment);
+		System.out.println(newDepartment);		
+
+		System.out.println();
+		System.out.println("=== TEST 4 --> DepartmentDaoJDBC : update ===");
+		System.out.print("Enter id for update: ");
+		int id = sc.nextInt();
+		dep = departmentDao.findById(id);	
+		dep.setName("Construcão");
+		departmentDao.update(dep);
+		System.out.println("Update completed");
+		
+		System.out.println();
+		System.out.println("=== TEST 4 --> DepartmentDaoJDBC : delete ===");
+		int idDelete = sc.nextInt();
+		departmentDao.deleteById(idDelete);
+		System.out.println("Deleted completed!");
+		
+		
 		
 		
 		
